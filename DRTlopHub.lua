@@ -1,70 +1,41 @@
--- DRTlop Hub v1.0
+-- DRTlopHub - Full Script with GUI Buttons -- Features: ESP, Aimbot, Auto Collect, SpeedHack, Fly, TP, Kill Aura, Antiban, Godmode (toggle)
 
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 200, 0, 300)
-Frame.Position = UDim2.new(0, 20, 0.5, -150)
-Frame.BackgroundTransparency = 0.2
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.Name = "DRTlopHub"
+local player = game.Players.LocalPlayer local main = Instance.new("ScreenGui", game.CoreGui) main.Name = "DRTlopHub"
 
-local CloseButton = Instance.new("TextButton", Frame)
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 0, 5)
-CloseButton.Text = "X"
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.Font = Enum.Font.SourceSansBold
-CloseButton.TextScaled = true
+local frame = Instance.new("Frame") frame.Size = UDim2.new(0, 200, 0, 400) frame.Position = UDim2.new(0, 20, 0.5, -200) frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) frame.Parent = main
 
-CloseButton.MouseButton1Click:Connect(function()
-    Frame.Visible = false
-end)
+-- Function template local function createButton(name, position, callback) local button = Instance.new("TextButton") button.Size = UDim2.new(0, 180, 0, 30) button.Position = UDim2.new(0, 10, 0, position) button.Text = name button.BackgroundColor3 = Color3.fromRGB(60, 60, 60) button.TextColor3 = Color3.new(1, 1, 1) button.Parent = frame button.MouseButton1Click:Connect(callback) end
 
-local UIS = game:GetService("UserInputService")
-UIS.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.K then
-        Frame.Visible = not Frame.Visible
+-- ESP createButton("ESP", 10, function() for _,v in pairs(game.Players:GetPlayers()) do if v ~= player and v.Character and v.Character:FindFirstChild("Head") then local billboard = Instance.new("BillboardGui", v.Character.Head) billboard.Size = UDim2.new(0, 100, 0, 40) billboard.AlwaysOnTop = true
+
+local label = Instance.new("TextLabel", billboard)
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.Text = v.Name
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.new(1, 0, 0)
     end
-end)
-
-local function CreateButton(text, yPos, callback)
-    local Button = Instance.new("TextButton", Frame)
-    Button.Size = UDim2.new(1, -20, 0, 30)
-    Button.Position = UDim2.new(0, 10, 0, yPos)
-    Button.Text = text
-    Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.MouseButton1Click:Connect(callback)
 end
 
--- ESP
-function CreateESP(player)
-    local BillboardGui = Instance.new("BillboardGui")
-    BillboardGui.Name = "DRTlopESP"
-    BillboardGui.Adornee = player.Character:WaitForChild("Head")
-    BillboardGui.Size = UDim2.new(0, 200, 0, 50)
-    BillboardGui.StudsOffset = Vector3.new(0, 3, 0)
-    BillboardGui.AlwaysOnTop = true
+end)
 
-    local NameLabel = Instance.new("TextLabel")
-    NameLabel.Parent = BillboardGui
-    NameLabel.Size = UDim2.new(1, 0, 1, 0)
-    NameLabel.Text = player.Name
-    NameLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-    NameLabel.BackgroundTransparency = 1
-    NameLabel.TextStrokeTransparency = 0.5
-    NameLabel.TextScaled = true
+-- Aimbot (simple) createButton("Aimbot", 50, function() getgenv().Aim = true local RunService = game:GetService("RunService") RunService.RenderStepped:Connect(function() if getgenv().Aim then local closest = nil local dist = math.huge for _,v in pairs(game.Players:GetPlayers()) do if v ~= player and v.Character and v.Character:FindFirstChild("Head") then local mag = (v.Character.Head.Position - player.Character.Head.Position).magnitude if mag < dist then dist = mag closest = v end end end if closest then workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, closest.Character.Head.Position) end end end) end)
 
-    BillboardGui.Parent = player.Character
-end
+-- Auto Collect (template) createButton("Auto Collect", 90, function() for _,obj in pairs(workspace:GetDescendants()) do if obj:IsA("TouchTransmitter") then firetouchinterest(player.Character.HumanoidRootPart, obj.Parent, 0) end end end)
 
-function EnableESP()
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and player.Character and not player.Character:FindFirstChild("DRTlopESP") then
-            CreateESP(player)
-        end
-    end
+-- SpeedHack createButton("SpeedHack", 130, function() player.Character.Humanoid.WalkSpeed = 100 end)
+
+-- Fly (basic) createButton("Fly", 170, function() local bp = Instance.new("BodyPosition", player.Character.HumanoidRootPart) bp.Position = player.Character.HumanoidRootPart.Position + Vector3.new(0, 50, 0) bp.MaxForce = Vector3.new(100000, 100000, 100000) end)
+
+-- Teleport to random player createButton("TP to Player", 210, function() for _,v in pairs(game.Players:GetPlayers()) do if v ~= player then player.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame + Vector3.new(2,0,0) break end end end)
+
+-- Kill Aura (basic loop) createButton("Kill Aura", 250, function() while true do for _,v in pairs(game.Players:GetPlayers()) do if v ~= player and v.Character and v.Character:FindFirstChild("Humanoid") then v.Character.Humanoid.Health = 0 end end wait(1) end end)
+
+-- Antiban (simple dummy) createButton("Antiban", 290, function() game:GetService("Players").LocalPlayer:Kick = function() end end)
+
+-- Godmode toggle local godmode = false createButton("Godmode (toggle)", 330, function() godmode = not godmode local char = player.Character if godmode then if char and char:FindFirstChildOfClass("Humanoid") then char:FindFirstChildOfClass("Humanoid").Name = "1" end else if char and char:FindFirstChild("1") then char:FindFirstChild("1").Name = "Humanoid" end end end)
+
+print("DRTlopHub Loaded")
+
 
     game.Players.PlayerAdded:Connect(function(player)
         player.CharacterAdded:Connect(function()
