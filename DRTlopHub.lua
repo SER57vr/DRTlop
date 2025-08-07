@@ -1,71 +1,63 @@
--- DRTlopHub - Full Script with GUI Buttons -- Features: ESP, Aimbot, Auto Collect, SpeedHack, Fly, TP, Kill Aura, Antiban, Godmode (toggle)
+-- DRTlop Hub v1
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UIListLayout = Instance.new("UIListLayout")
 
-local player = game.Players.LocalPlayer local main = Instance.new("ScreenGui", game.CoreGui) main.Name = "DRTlopHub"
+local buttons = {
+	{Text = "ESP", Function = function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/Ninja10908/S4/main/Kurdhub"))()
+	end},
+	{Text = "Aimbot", Function = function()
+		print("Aimbot включён (пока не работает)")
+	end},
+	{Text = "Auto Collect", Function = function()
+		print("Auto Collect включён (пока не работает)")
+	end},
+	{Text = "SpeedHack", Function = function()
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+	end},
+	{Text = "Fly", Function = function()
+		loadstring(game:HttpGet("https://pastebin.com/raw/xq6mT5gJ"))()
+	end},
+	{Text = "TP", Function = function()
+		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 100, 0)
+	end},
+	{Text = "Kill Aura", Function = function()
+		print("Kill Aura включён (пока не работает)")
+	end},
+	{Text = "Anti-Ban", Function = function()
+		hookfunction = hookfunction or function() end
+		print("Anti-Ban включён (эмуляция)")
+	end},
+	{Text = "God Mode", Function = function()
+		local char = game.Players.LocalPlayer.Character
+		if char:FindFirstChild("Humanoid") then
+			char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+				char.Humanoid.Health = 100
+			end)
+			print("God Mode включён")
+		end
+	end},
+}
 
-local frame = Instance.new("Frame") frame.Size = UDim2.new(0, 200, 0, 400) frame.Position = UDim2.new(0, 20, 0.5, -200) frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) frame.Parent = main
+ScreenGui.Parent = game.CoreGui
+Frame.Parent = ScreenGui
+Frame.Position = UDim2.new(0, 100, 0, 100)
+Frame.Size = UDim2.new(0, 200, 0, #buttons * 35)
+Frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+Frame.BorderSizePixel = 0
 
--- Function template local function createButton(name, position, callback) local button = Instance.new("TextButton") button.Size = UDim2.new(0, 180, 0, 30) button.Position = UDim2.new(0, 10, 0, position) button.Text = name button.BackgroundColor3 = Color3.fromRGB(60, 60, 60) button.TextColor3 = Color3.new(1, 1, 1) button.Parent = frame button.MouseButton1Click:Connect(callback) end
+UIListLayout.Parent = Frame
 
--- ESP createButton("ESP", 10, function() for _,v in pairs(game.Players:GetPlayers()) do if v ~= player and v.Character and v.Character:FindFirstChild("Head") then local billboard = Instance.new("BillboardGui", v.Character.Head) billboard.Size = UDim2.new(0, 100, 0, 40) billboard.AlwaysOnTop = true
-
-local label = Instance.new("TextLabel", billboard)
-        label.Size = UDim2.new(1, 0, 1, 0)
-        label.Text = v.Name
-        label.BackgroundTransparency = 1
-        label.TextColor3 = Color3.new(1, 0, 0)
-    end
-end
-
-end)
-
--- Aimbot (simple) createButton("Aimbot", 50, function() getgenv().Aim = true local RunService = game:GetService("RunService") RunService.RenderStepped:Connect(function() if getgenv().Aim then local closest = nil local dist = math.huge for _,v in pairs(game.Players:GetPlayers()) do if v ~= player and v.Character and v.Character:FindFirstChild("Head") then local mag = (v.Character.Head.Position - player.Character.Head.Position).magnitude if mag < dist then dist = mag closest = v end end end if closest then workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, closest.Character.Head.Position) end end end) end)
-
--- Auto Collect (template) createButton("Auto Collect", 90, function() for _,obj in pairs(workspace:GetDescendants()) do if obj:IsA("TouchTransmitter") then firetouchinterest(player.Character.HumanoidRootPart, obj.Parent, 0) end end end)
-
--- SpeedHack createButton("SpeedHack", 130, function() player.Character.Humanoid.WalkSpeed = 100 end)
-
--- Fly (basic) createButton("Fly", 170, function() local bp = Instance.new("BodyPosition", player.Character.HumanoidRootPart) bp.Position = player.Character.HumanoidRootPart.Position + Vector3.new(0, 50, 0) bp.MaxForce = Vector3.new(100000, 100000, 100000) end)
-
--- Teleport to random player createButton("TP to Player", 210, function() for _,v in pairs(game.Players:GetPlayers()) do if v ~= player then player.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame + Vector3.new(2,0,0) break end end end)
-
--- Kill Aura (basic loop) createButton("Kill Aura", 250, function() while true do for _,v in pairs(game.Players:GetPlayers()) do if v ~= player and v.Character and v.Character:FindFirstChild("Humanoid") then v.Character.Humanoid.Health = 0 end end wait(1) end end)
-
--- Antiban (simple dummy) createButton("Antiban", 290, function() game:GetService("Players").LocalPlayer:Kick = function() end end)
-
--- Godmode toggle local godmode = false createButton("Godmode (toggle)", 330, function() godmode = not godmode local char = player.Character if godmode then if char and char:FindFirstChildOfClass("Humanoid") then char:FindFirstChildOfClass("Humanoid").Name = "1" end else if char and char:FindFirstChild("1") then char:FindFirstChild("1").Name = "Humanoid" end end end)
-
-print("DRTlopHub Loaded")
-
-
-    game.Players.PlayerAdded:Connect(function(player)
-        player.CharacterAdded:Connect(function()
-            wait(1)
-            CreateESP(player)
-        end)
-    end)
-end
-
--- Aimbot (на ПКМ)
-function EnableAimbot()
-    local Camera = workspace.CurrentCamera
-    local RunService = game:GetService("RunService")
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    local Mouse = LocalPlayer:GetMouse()
-
-    local function GetClosestPlayer()
-        local closest, distance = nil, math.huge
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-                local pos = Camera:WorldToScreenPoint(player.Character.Head.Position)
-                local mag = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
-                if mag < distance then
-                    closest = player
-                    distance = mag
-                end
-            end
-        end
-        return closest
+for _, b in pairs(buttons) do
+	local btn = Instance.new("TextButton")
+	btn.Text = b.Text
+	btn.Size = UDim2.new(1, 0, 0, 30)
+	btn.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Parent = Frame
+	btn.MouseButton1Click:Connect(b.Function)
+                                                                        end        return closest
     end
 
     RunService.RenderStepped:Connect(function()
