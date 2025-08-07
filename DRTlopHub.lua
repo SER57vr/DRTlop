@@ -4,6 +4,29 @@ Frame.Size = UDim2.new(0, 200, 0, 300)
 Frame.Position = UDim2.new(0, 20, 0.5, -150)
 Frame.BackgroundTransparency = 0.2
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Name = "DRTlopHub"
+
+-- Кнопка закрытия
+local CloseButton = Instance.new("TextButton", Frame)
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.Text = "X"
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextScaled = true
+
+CloseButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+end)
+
+-- Клавиша K открывает/закрывает меню
+local UIS = game:GetService("UserInputService")
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.K then
+        Frame.Visible = not Frame.Visible
+    end
+end)
 
 local function CreateButton(text, yPos, callback)
     local Button = Instance.new("TextButton", Frame)
@@ -66,6 +89,19 @@ end)
 
 CreateButton("SpeedHack", 130, function()
     print("Спидхак активирован (пока пусто)")
+end)
+
+CreateButton("Fly", 170, function()
+    print("Полёт активирован (пока пусто)")
+end)
+
+CreateButton("TP", 210, function()
+    print("Телепорт активирован (пока пусто)")
+end)
+
+CreateButton("Kill Aura", 250, function()
+    print("Kill Aura активирован (пока пусто)")
+end)    print("Спидхак активирован (пока пусто)")
 end)
 
 CreateButton("Fly", 170, function()
