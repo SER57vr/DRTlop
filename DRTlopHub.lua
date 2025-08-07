@@ -1,399 +1,123 @@
--- DRTlop Hub v1
-local ScreenGui = Instance.new("ScreenGui")
+-- DRTlop Hub для Steal a Brainrot
+-- Поддерживает ESP, авто-сбор, авто-полет к базе и другие функции
+
+local DRTlopHub = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
-local UIListLayout = Instance.new("UIListLayout")
+local UICorner = Instance.new("UICorner")
+local Title = Instance.new("TextLabel")
+local ToggleButton = Instance.new("TextButton")
 
-local buttons = {
-	{Text = "ESP", Function = function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/Ninja10908/S4/main/Kurdhub"))()
-	end},
-	{Text = "Aimbot", Function = function()
-		print("Aimbot включён (пока не работает)")
-	end},
-	{Text = "Auto Collect", Function = function()
-		print("Auto Collect включён (пока не работает)")
-	end},
-	{Text = "SpeedHack", Function = function()
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-	end},
-	{Text = "Fly", Function = function()
-		loadstring(game:HttpGet("https://pastebin.com/raw/xq6mT5gJ"))()
-	end},
-	{Text = "TP", Function = function()
-		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 100, 0)
-	end},
-	{Text = "Kill Aura", Function = function()
-		print("Kill Aura включён (пока не работает)")
-	end},
-	{Text = "Anti-Ban", Function = function()
-		hookfunction = hookfunction or function() end
-		print("Anti-Ban включён (эмуляция)")
-	end},
-	{Text = "God Mode", Function = function()
-		local char = game.Players.LocalPlayer.Character
-		if char:FindFirstChild("Humanoid") then
-			char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-				char.Humanoid.Health = 100
+-- Переменные состояния функций
+local isESPEnabled = false
+local isGodMode = false
+local isFlyToBase = false
+local isSpeedHack = false
+local isAutoBuySecrets = false
+
+-- UI
+DRTlopHub.Name = "DRTlopHub"
+DRTlopHub.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+Frame.Parent = DRTlopHub
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.Position = UDim2.new(0.3, 0, 0.2, 0)
+Frame.Size = UDim2.new(0, 300, 0, 350)
+Frame.Visible = true
+
+UICorner.Parent = Frame
+
+Title.Name = "Title"
+Title.Parent = Frame
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0.05, 0, 0.02, 0)
+Title.Size = UDim2.new(0.9, 0, 0.1, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "DRTlop Hub (Steal a Brainrot)"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextScaled = true
+Title.TextWrapped = true
+
+-- Функция для создания кнопок
+function createButton(name, posY, callback)
+	local button = Instance.new("TextButton")
+	button.Parent = Frame
+	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	button.Position = UDim2.new(0.1, 0, posY, 0)
+	button.Size = UDim2.new(0.8, 0, 0.1, 0)
+	button.Font = Enum.Font.GothamBold
+	button.Text = name
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.TextScaled = true
+	button.MouseButton1Click:Connect(callback)
+end
+
+-- КНОПКИ
+
+createButton("ESP (игроки + секретки + базы)", 0.15, function()
+	isESPEnabled = not isESPEnabled
+	if isESPEnabled then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/yourrepo/esp.lua"))()
+	end
+end)
+
+createButton("Годмод", 0.27, function()
+	isGodMode = not isGodMode
+	if isGodMode then
+		local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+				humanoid.Health = humanoid.MaxHealth
 			end)
-			print("God Mode включён")
 		end
-	end},
-}
-
-ScreenGui.Parent = game.CoreGui
-Frame.Parent = ScreenGui
-Frame.Position = UDim2.new(0, 100, 0, 100)
-Frame.Size = UDim2.new(0, 200, 0, #buttons * 35)
-Frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-Frame.BorderSizePixel = 0
-
-UIListLayout.Parent = Frame
-
-for _, b in pairs(buttons) do
-	local btn = Instance.new("TextButton")
-	btn.Text = b.Text
-	btn.Size = UDim2.new(1, 0, 0, 30)
-	btn.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-	btn.TextColor3 = Color3.new(1, 1, 1)
-	btn.Parent = Frame
-	btn.MouseButton1Click:Connect(b.Function)
-                                                                        end        return closest
-    end
-
-    RunService.RenderStepped:Connect(function()
-        if UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-            local target = GetClosestPlayer()
-            if target and target.Character and target.Character:FindFirstChild("Head") then
-                Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
-            end
-        end
-    end)
-end
-
--- Auto Collect
-function AutoCollect()
-    for _, item in pairs(workspace:GetDescendants()) do
-        if item:IsA("TouchTransmitter") and item.Parent then
-            firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item.Parent, 0)
-            firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item.Parent, 1)
-        end
-    end
-end
-
--- SpeedHack
-function SpeedHack()
-    local human = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if human then
-        human.WalkSpeed = 100
-    end
-end
-
--- Fly
-function Fly()
-    local p = game.Players.LocalPlayer
-    local mouse = p:GetMouse()
-    local char = p.Character
-    local hrp = char:WaitForChild("HumanoidRootPart")
-    local flying = true
-
-    local bv = Instance.new("BodyVelocity", hrp)
-    bv.MaxForce = Vector3.new(1, 1, 1) * math.huge
-    bv.Velocity = Vector3.new(0, 0, 0)
-
-    local RunService = game:GetService("RunService")
-    RunService.RenderStepped:Connect(function()
-        if flying then
-            local move = Vector3.new()
-            if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + workspace.CurrentCamera.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - workspace.CurrentCamera.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - workspace.CurrentCamera.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + workspace.CurrentCamera.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
-            bv.Velocity = move * 60
-        end
-    end)
-end
-
--- Teleport to nearest player
-function TeleportToPlayer()
-    local lp = game.Players.LocalPlayer
-    local closest, dist = nil, math.huge
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local mag = (lp.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-            if mag < dist then
-                closest = player
-                dist = mag
-            end
-        end
-    end
-    if closest then
-        lp.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
-    end
-end
-
--- Kill Aura
-function KillAura()
-    local lp = game.Players.LocalPlayer
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    game:GetService("RunService").RenderStepped:Connect(function()
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= lp and player.Character and player.Character:FindFirstChild("Humanoid") then
-                local enemy = player.Character
-                if (enemy.HumanoidRootPart.Position - hrp.Position).Magnitude < 10 then
-                    enemy.Humanoid:TakeDamage(5)
-                end
-            end
-        end
-    end)
-end
-
--- Buttons
-CreateButton("ESP", 10, EnableESP)
-CreateButton("Aimbot", 50, EnableAimbot)
-CreateButton("Auto Collect", 90, AutoCollect)
-CreateButton("SpeedHack", 130, SpeedHack)
-CreateButton("Fly", 170, Fly)
-CreateButton("TP", 210, TeleportToPlayer)
-CreateButton("Kill Aura", 250, KillAura)-- DRTlop Hub v1.0
-
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 200, 0, 300)
-Frame.Position = UDim2.new(0, 20, 0.5, -150)
-Frame.BackgroundTransparency = 0.2
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.Name = "DRTlopHub"
-
-local CloseButton = Instance.new("TextButton", Frame)
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 0, 5)
-CloseButton.Text = "X"
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.Font = Enum.Font.SourceSansBold
-CloseButton.TextScaled = true
-
-CloseButton.MouseButton1Click:Connect(function()
-    Frame.Visible = false
+	end
 end)
 
-local UIS = game:GetService("UserInputService")
-UIS.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.K then
-        Frame.Visible = not Frame.Visible
-    end
+createButton("Авто-Полет к базе", 0.39, function()
+	isFlyToBase = not isFlyToBase
+	if isFlyToBase then
+		local base = workspace:FindFirstChild("YourBase")
+		if base then
+			game.Players.LocalPlayer.Character:MoveTo(base.Position + Vector3.new(0, 10, 0))
+		end
+	end
 end)
 
-local function CreateButton(text, yPos, callback)
-    local Button = Instance.new("TextButton", Frame)
-    Button.Size = UDim2.new(1, -20, 0, 30)
-    Button.Position = UDim2.new(0, 10, 0, yPos)
-    Button.Text = text
-    Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.MouseButton1Click:Connect(callback)
-end
-
--- ESP
-function CreateESP(player)
-    local BillboardGui = Instance.new("BillboardGui")
-    BillboardGui.Name = "DRTlopESP"
-    BillboardGui.Adornee = player.Character:WaitForChild("Head")
-    BillboardGui.Size = UDim2.new(0, 200, 0, 50)
-    BillboardGui.StudsOffset = Vector3.new(0, 3, 0)
-    BillboardGui.AlwaysOnTop = true
-
-    local NameLabel = Instance.new("TextLabel")
-    NameLabel.Parent = BillboardGui
-    NameLabel.Size = UDim2.new(1, 0, 1, 0)
-    NameLabel.Text = player.Name
-    NameLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-    NameLabel.BackgroundTransparency = 1
-    NameLabel.TextStrokeTransparency = 0.5
-    NameLabel.TextScaled = true
-
-    BillboardGui.Parent = player.Character
-end
-
-function EnableESP()
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and player.Character and not player.Character:FindFirstChild("DRTlopESP") then
-            CreateESP(player)
-        end
-    end
-
-    game.Players.PlayerAdded:Connect(function(player)
-        player.CharacterAdded:Connect(function()
-            wait(1)
-            CreateESP(player)
-        end)
-    end)
-end
-
--- Aimbot (на ПКМ)
-function EnableAimbot()
-    local Camera = workspace.CurrentCamera
-    local RunService = game:GetService("RunService")
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    local Mouse = LocalPlayer:GetMouse()
-
-    local function GetClosestPlayer()
-        local closest, distance = nil, math.huge
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-                local pos = Camera:WorldToScreenPoint(player.Character.Head.Position)
-                local mag = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
-                if mag < distance then
-                    closest = player
-                    distance = mag
-                end
-            end
-        end
-        return closest
-    end
-
-    RunService.RenderStepped:Connect(function()
-        if UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-            local target = GetClosestPlayer()
-            if target and target.Character and target.Character:FindFirstChild("Head") then
-                Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
-            end
-        end
-    end)
-end
-
--- Auto Collect
-function AutoCollect()
-    for _, item in pairs(workspace:GetDescendants()) do
-        if item:IsA("TouchTransmitter") and item.Parent then
-            firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item.Parent, 0)
-            firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item.Parent, 1)
-        end
-    end
-end
-
--- SpeedHack
-function SpeedHack()
-    local human = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if human then
-        human.WalkSpeed = 100
-    end
-end
-
--- Fly
-function Fly()
-    local p = game.Players.LocalPlayer
-    local mouse = p:GetMouse()
-    local char = p.Character
-    local hrp = char:WaitForChild("HumanoidRootPart")
-    local flying = true
-
-    local bv = Instance.new("BodyVelocity", hrp)
-    bv.MaxForce = Vector3.new(1, 1, 1) * math.huge
-    bv.Velocity = Vector3.new(0, 0, 0)
-
-    local RunService = game:GetService("RunService")
-    RunService.RenderStepped:Connect(function()
-        if flying then
-            local move = Vector3.new()
-            if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + workspace.CurrentCamera.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - workspace.CurrentCamera.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - workspace.CurrentCamera.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + workspace.CurrentCamera.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
-            bv.Velocity = move * 60
-        end
-    end)
-end
-
--- Teleport to nearest player
-function TeleportToPlayer()
-    local lp = game.Players.LocalPlayer
-    local closest, dist = nil, math.huge
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local mag = (lp.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-            if mag < dist then
-                closest = player
-                dist = mag
-            end
-        end
-    end
-    if closest then
-        lp.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
-    end
-end
-
--- Kill Aura
-function KillAura()
-    local lp = game.Players.LocalPlayer
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    game:GetService("RunService").RenderStepped:Connect(function()
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= lp and player.Character and player.Character:FindFirstChild("Humanoid") then
-                local enemy = player.Character
-                if (enemy.HumanoidRootPart.Position - hrp.Position).Magnitude < 10 then
-                    enemy.Humanoid:TakeDamage(5)
-                end
-            end
-        end
-    end)
-end
-
--- Buttons
-CreateButton("ESP", 10, EnableESP)
-CreateButton("Aimbot", 50, EnableAimbot)
-CreateButton("Auto Collect", 90, AutoCollect)
-CreateButton("SpeedHack", 130, SpeedHack)
-CreateButton("Fly", 170, Fly)
-CreateButton("TP", 210, TeleportToPlayer)
-CreateButton("Kill Aura", 250, KillAura)            CreateESP(player)
-        end)
-    end)
-end
-
--- Buttons
-CreateButton("ESP", 10, function()
-    EnableESP()
+createButton("Скорость x5", 0.51, function()
+	isSpeedHack = not isSpeedHack
+	local humanoid = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+	if humanoid then
+		humanoid.WalkSpeed = isSpeedHack and 80 or 16
+	end
 end)
 
-CreateButton("Aimbot", 50, function()
-    print("Aimbot активирован (пока пусто)")
+createButton("Авто-Покупка секретов", 0.63, function()
+	isAutoBuySecrets = not isAutoBuySecrets
+	if isAutoBuySecrets then
+		for _, v in pairs(workspace:GetDescendants()) do
+			if v.Name == "BuyZone" and v:IsA("Part") then
+				local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+				if hrp then
+					firetouchinterest(hrp, v, 0)
+					task.wait(0.1)
+					firetouchinterest(hrp, v, 1)
+				end
+			end
+		end
+	end
 end)
 
-CreateButton("Auto Collect", 90, function()
-    print("Автосбор активирован (пока пусто)")
-end)
+-- Кнопка открыть/закрыть интерфейс
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = DRTlopHub
+ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+ToggleButton.Position = UDim2.new(0, 0, 0.9, 0)
+ToggleButton.Size = UDim2.new(0, 100, 0, 30)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Text = "Открыть/Закрыть"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextScaled = true
 
-CreateButton("SpeedHack", 130, function()
-    print("Спидхак активирован (пока пусто)")
-end)
-
-CreateButton("Fly", 170, function()
-    print("Полёт активирован (пока пусто)")
-end)
-
-CreateButton("TP", 210, function()
-    print("Телепорт активирован (пока пусто)")
-end)
-
-CreateButton("Kill Aura", 250, function()
-    print("Kill Aura активирован (пока пусто)")
-end)    print("Спидхак активирован (пока пусто)")
-end)
-
-CreateButton("Fly", 170, function()
-    print("Полёт активирован (пока пусто)")
-end)
-
-CreateButton("TP", 210, function()
-    print("Телепорт активирован (пока пусто)")
-end)
-
-CreateButton("Kill Aura", 250, function()
-    print("Kill Aura активирован (пока пусто)")
+ToggleButton.MouseButton1Click:Connect(function()
+	Frame.Visible = not Frame.Visible
 end)
